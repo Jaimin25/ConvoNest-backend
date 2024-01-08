@@ -22,8 +22,6 @@ io.on("connection", (socket) => {
     if (!users.some((user) => user.userId === userId)) {
       users.push({ userId, socketId: socket.id });
     }
-    console.log("[ONLINE]", users);
-    console.log(`User ${userId} connected`);
   }
 
   socket.on(`chat:${userId}:send-message`, (data) => {
@@ -52,5 +50,5 @@ app.get("/", (req: any, res: any) => {
 });
 
 server.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`App listening on port ${port}`);
 });
