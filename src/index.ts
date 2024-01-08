@@ -7,7 +7,7 @@ const server = createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: ["http://localhost:3000", "https://convonest.vercel.app"],
     methods: ["GET", "POST"],
     credentials: true,
   },
