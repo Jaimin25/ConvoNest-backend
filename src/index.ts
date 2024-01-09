@@ -22,9 +22,8 @@ io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId as string;
   if (userId !== undefined) {
     socket.join(userId);
-    if (!users.some((user) => user.userId === userId)) {
-      users.push({ userId, socketId: socket.id });
-    }
+    users.push({ userId, socketId: socket.id });
+    console.log("[USERS]", users);
   }
 
   socket.on(`chat:${userId}:send-message`, (data) => {
