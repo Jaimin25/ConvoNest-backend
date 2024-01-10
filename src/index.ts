@@ -23,7 +23,6 @@ io.on("connection", (socket) => {
   if (userId !== undefined) {
     socket.join(userId);
     users.push({ userId, socketId: socket.id });
-    console.log("[USERS]", users);
   }
 
   socket.on(`chat:${userId}:send-message`, (data) => {
@@ -35,6 +34,38 @@ io.on("connection", (socket) => {
             .emit(`chat:${user.userId}:receive-message`, data.message);
         }
       });
+    });
+  });
+
+  socket.on(`user:${userId}:send-request`, ({ data }) => {
+    data.sentRequest.username = data.username;
+    users.map((user: any) => {
+      if (user.userId === data.sentRequest.receiverId) {
+        socket.broadcast
+          .to(user.userId)
+          .emit(`user:${user.userId}:receive-request`, data.sentRequest);
+      }
+    });
+  });
+
+  socket.on(`user:${userId}:cancel-request`, (data) => {
+    users.map((user: any) => {
+      if (user.userId === data.receiverId || user.userId === data.senderId) {
+        socket.broadcast
+          .to(user.userId)
+          .emit(`user:${user.userId}:cancel-request`, data.id);
+      }
+    });
+  });
+
+  socket.on(`user:${userId}:accept-request`, ({ data }) => {
+    data.contact.username = data.username;
+    users.map((user: any) => {
+      if (user.userId === data.contact.user2Id) {
+        socket.broadcast
+          .to(user.userId)
+          .emit(`user:${user.userId}:receive-accept-request`, data.contact);
+      }
     });
   });
 
