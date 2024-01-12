@@ -18,8 +18,18 @@ const port = 4000;
 
 const users: { userId: string; socketId: string }[] = [];
 
+io.use((socket, next) => {
+  const token = socket.handshake.query.token;
+  if (token) {
+    next();
+  } else {
+    next(new Error("Unauthorized"));
+  }
+});
+
 io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId as string;
+
   if (userId !== undefined) {
     socket.join(userId);
     users.push({ userId, socketId: socket.id });
