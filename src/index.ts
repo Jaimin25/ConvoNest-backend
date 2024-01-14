@@ -79,6 +79,16 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on(`user:${userId}:send-remove-friend`, (data) => {
+    users.map((user: any) => {
+      if (user.userId === data.receiverId) {
+        socket.broadcast
+          .to(user.userId)
+          .emit(`user:${user.userId}:receive-remove-friend`, data);
+      }
+    });
+  });
+
   socket.on("disconnect", () => {
     socket.leave(userId);
     users.splice(
