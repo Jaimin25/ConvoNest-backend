@@ -32,7 +32,10 @@ io.on("connection", (socket) => {
 
   if (userId !== undefined) {
     socket.join(userId);
-    users.push({ userId, socketId: socket.id });
+    const index = users.findIndex((user) => user.userId === userId);
+    if (index === -1) {
+      users.push({ userId, socketId: socket.id });
+    }
   }
 
   socket.on(`chat:${userId}:send-message`, (data) => {
