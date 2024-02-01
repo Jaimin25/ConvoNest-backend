@@ -44,7 +44,11 @@ io.on("connection", (socket) => {
         if (user.userId === id) {
           socket.broadcast
             .to(user.userId)
-            .emit(`chat:${user.userId}:receive-message`, data.message);
+            .emit(
+              `chat:${user.userId}:receive-message`,
+              data.message,
+              data.chat
+            );
         }
       });
     });
@@ -89,6 +93,18 @@ io.on("connection", (socket) => {
           .to(user.userId)
           .emit(`user:${user.userId}:receive-remove-friend`, data);
       }
+    });
+  });
+
+  socket.on(`chat:${userId}:send-delete-chat`, (data) => {
+    users.map((user: any) => {
+      data.users.map((receiver: any) => {
+        if (user.userId === receiver.id) {
+          socket.broadcast
+            .to(receiver.id)
+            .emit(`chat:${receiver.id}:receive-delete-chat`, data.chatId);
+        }
+      });
     });
   });
 
