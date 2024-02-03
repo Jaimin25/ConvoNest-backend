@@ -108,6 +108,22 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on(`chat:${userId}:send-delete-message`, (data) => {
+    users.map((user: any) => {
+      data.users.map((receiver: any) => {
+        if (user.userId === receiver.id) {
+          socket.broadcast
+            .to(receiver.id)
+            .emit(
+              `chat:${receiver.id}:receive-delete-message`,
+              data.chatId,
+              data.messageId
+            );
+        }
+      });
+    });
+  });
+
   socket.on("disconnect", () => {
     socket.leave(userId);
     users.splice(
