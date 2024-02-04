@@ -124,9 +124,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    socket.leave(userId);
+    socket.leave(socket.id);
     users.splice(
-      users.findIndex((user) => user.userId === userId),
+      users.findIndex((user) => user.socketId === socket.id),
       1
     );
   });
