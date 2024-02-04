@@ -32,10 +32,8 @@ io.on("connection", (socket) => {
 
   if (userId !== undefined) {
     socket.join(userId);
-    const index = users.findIndex((user) => user.userId === userId);
-    if (index === -1) {
-      users.push({ userId, socketId: socket.id });
-    }
+
+    users.push({ userId, socketId: socket.id });
   }
 
   socket.on(`chat:${userId}:send-message`, (data) => {
@@ -43,7 +41,7 @@ io.on("connection", (socket) => {
       data.userId.map((id: any) => {
         if (user.userId === id) {
           socket.broadcast
-            .to(user.userId)
+            .to(user.socketId)
             .emit(
               `chat:${user.userId}:receive-message`,
               data.message,
@@ -56,10 +54,11 @@ io.on("connection", (socket) => {
 
   socket.on(`user:${userId}:send-request`, ({ data }) => {
     data.sentRequest.username = data.username;
+
     users.map((user: any) => {
       if (user.userId === data.sentRequest.receiverId) {
         socket.broadcast
-          .to(user.userId)
+          .to(user.socketId)
           .emit(`user:${user.userId}:receive-request`, data.sentRequest);
       }
     });
@@ -69,7 +68,7 @@ io.on("connection", (socket) => {
     users.map((user: any) => {
       if (user.userId === data.receiverId || user.userId === data.senderId) {
         socket.broadcast
-          .to(user.userId)
+          .to(user.socketId)
           .emit(`user:${user.userId}:cancel-request`, data.id);
       }
     });
@@ -80,7 +79,7 @@ io.on("connection", (socket) => {
     users.map((user: any) => {
       if (user.userId === data.contact.user2Id) {
         socket.broadcast
-          .to(user.userId)
+          .to(user.socketId)
           .emit(`user:${user.userId}:receive-accept-request`, data.contact);
       }
     });
@@ -90,7 +89,7 @@ io.on("connection", (socket) => {
     users.map((user: any) => {
       if (user.userId === data.receiverId) {
         socket.broadcast
-          .to(user.userId)
+          .to(user.socketId)
           .emit(`user:${user.userId}:receive-remove-friend`, data);
       }
     });
@@ -101,7 +100,7 @@ io.on("connection", (socket) => {
       data.users.map((receiver: any) => {
         if (user.userId === receiver.id) {
           socket.broadcast
-            .to(receiver.id)
+            .to(user.socketId)
             .emit(`chat:${receiver.id}:receive-delete-chat`, data.chatId);
         }
       });
@@ -113,7 +112,7 @@ io.on("connection", (socket) => {
       data.users.map((receiver: any) => {
         if (user.userId === receiver.id) {
           socket.broadcast
-            .to(receiver.id)
+            .to(user.socketId)
             .emit(
               `chat:${receiver.id}:receive-delete-message`,
               data.chatId,
