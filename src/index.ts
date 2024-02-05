@@ -35,7 +35,20 @@ io.on("connection", (socket) => {
 
     users.push({ userId, socketId: socket.id });
   }
+  const onlineUsers = users.map((user) => user.userId);
 
+  socket.on("get-online-users", () => {
+    socket.emit(
+      "online-users",
+      onlineUsers.filter((user, index) => onlineUsers.indexOf(user) === index)
+    );
+    users.map((user: any) => {
+      socket.broadcast.to(user.userId).emit(
+        "online-users",
+        onlineUsers.filter((user, index) => onlineUsers.indexOf(user) === index)
+      );
+    });
+  });
   socket.on(`chat:${userId}:send-message`, (data) => {
     users.map((user: any) => {
       data.userId.map((id: any) => {
@@ -123,12 +136,53 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on(`chat:${userId}:send-typing`, (usersList, chatId) => {
+    users.map((user: any) => {
+      usersList.map((receiver: any) => {
+        if (user.userId === receiver) {
+          socket.broadcast
+            .to(user.socketId)
+            .emit(
+              `chat:${user.userId}:receive-typing`,
+              user.userId,
+              true,
+              chatId
+            );
+        }
+      });
+    });
+  });
+
+  socket.on(`chat:${userId}:send-stop-typing`, (usersList, chatId) => {
+    users.map((user: any) => {
+      usersList.map((receiver: any) => {
+        if (user.userId === receiver) {
+          socket.broadcast
+            .to(user.socketId)
+            .emit(
+              `chat:${user.userId}:receive-stop-typing`,
+              user.userId,
+              false,
+              chatId
+            );
+        }
+      });
+    });
+  });
+
   socket.on("disconnect", () => {
     socket.leave(socket.id);
     users.splice(
       users.findIndex((user) => user.socketId === socket.id),
       1
     );
+    const onlineUsers = users.map((user) => user.userId);
+    users.map((user: any) => {
+      socket.broadcast.to(user.userId).emit(
+        "online-users",
+        onlineUsers.filter((user, index) => onlineUsers.indexOf(user) === index)
+      );
+    });
   });
 });
 
