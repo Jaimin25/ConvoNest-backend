@@ -2,9 +2,7 @@
 
 Backend developed for WebSockets to provide realtime features in ConvoNest app.
 
-## Installations
-
-# Local development
+## Installation
 
 1. Fork the repo
 
