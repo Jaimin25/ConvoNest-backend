@@ -136,7 +136,7 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on(`chat:${userId}:send-typing`, (usersList, chatId) => {
+  socket.on(`chat:${userId}:send-typing`, (usersList, chatId, typingUserId) => {
     users.map((user: any) => {
       usersList.map((receiver: any) => {
         if (user.userId === receiver) {
@@ -146,7 +146,8 @@ io.on("connection", (socket) => {
               `chat:${user.userId}:receive-typing`,
               user.userId,
               true,
-              chatId
+              chatId,
+              typingUserId && typingUserId
             );
         }
       });
