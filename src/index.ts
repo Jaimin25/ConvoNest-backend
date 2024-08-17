@@ -40,12 +40,14 @@ io.on("connection", (socket) => {
   socket.on("get-online-users", () => {
     socket.emit(
       "online-users",
-      onlineUsers.filter((user, index) => onlineUsers.indexOf(user) === index)
+      onlineUsers.filter((user, index) => onlineUsers.indexOf(user) === index),
     );
     users.map((user: any) => {
       socket.broadcast.to(user.userId).emit(
         "online-users",
-        onlineUsers.filter((user, index) => onlineUsers.indexOf(user) === index)
+        onlineUsers.filter(
+          (user, index) => onlineUsers.indexOf(user) === index,
+        ),
       );
     });
   });
@@ -58,7 +60,7 @@ io.on("connection", (socket) => {
             .emit(
               `chat:${user.userId}:receive-message`,
               data.message,
-              data.chat
+              data.chat,
             );
         }
       });
@@ -129,7 +131,7 @@ io.on("connection", (socket) => {
             .emit(
               `chat:${receiver.id}:receive-delete-message`,
               data.chatId,
-              data.messageId
+              data.messageId,
             );
         }
       });
@@ -147,7 +149,7 @@ io.on("connection", (socket) => {
               user.userId,
               true,
               chatId,
-              typingUserId && typingUserId
+              typingUserId && typingUserId,
             );
         }
       });
@@ -164,7 +166,7 @@ io.on("connection", (socket) => {
               `chat:${user.userId}:receive-stop-typing`,
               user.userId,
               false,
-              chatId
+              chatId,
             );
         }
       });
@@ -175,13 +177,15 @@ io.on("connection", (socket) => {
     socket.leave(socket.id);
     users.splice(
       users.findIndex((user) => user.socketId === socket.id),
-      1
+      1,
     );
     const onlineUsers = users.map((user) => user.userId);
     users.map((user: any) => {
       socket.broadcast.to(user.userId).emit(
         "online-users",
-        onlineUsers.filter((user, index) => onlineUsers.indexOf(user) === index)
+        onlineUsers.filter(
+          (user, index) => onlineUsers.indexOf(user) === index,
+        ),
       );
     });
   });
