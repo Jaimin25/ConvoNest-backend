@@ -7,12 +7,17 @@ const server = createServer(app);
 
 const io = new Server(server, {
   cors: {
-    allowedHeaders: ["Access-Control-Allow-Origin", "*"],
-    origin: ["http://localhost:3000", "https://convonest.vercel.app"],
+    origin: [
+      "http://localhost:3000",
+      "https://convonest.vercel.app",
+      "https://convonest.jaimin.pro",
+    ],
     methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type", "Authorization"], // Adjust headers as needed
     credentials: true,
   },
 });
+
 
 const port = 4000;
 
